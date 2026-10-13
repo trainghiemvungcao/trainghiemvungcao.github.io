@@ -507,3 +507,24 @@ html { scroll-padding-top: 88px; }
   border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; font-weight: 600;
 }
 .btn:disabled { opacity: .7; cursor: wait; transform: none; }
+
+/* ---------- Nút nhạc nền ---------- */
+.music-toggle {
+  position: fixed; left: 16px; bottom: 16px; z-index: 150;
+  display: inline-flex; align-items: center; gap: 8px;
+  width: 48px; height: 48px; justify-content: center; padding: 0; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--green-dark); color: #fff; font: inherit; font-weight: 700; font-size: .9rem;
+  box-shadow: 0 8px 22px rgba(20, 63, 47, .35); transition: transform .15s ease, background .2s ease;
+}
+.music-toggle:hover { transform: translateY(-2px); background: var(--green); }
+.music-toggle svg { width: 24px; height: 24px; flex: none; }
+.music-toggle .m-on { display: none; }
+.music-toggle.is-playing { background: var(--amber); }
+.music-toggle.is-playing:hover { background: var(--amber-dark); }
+.music-toggle.is-playing .m-on { display: inline; }
+.music-toggle.is-playing .m-off { display: none; }
+.music-toggle.is-playing svg { animation: music-pulse 1.4s ease-in-out infinite; }
+@keyframes music-pulse { 50% { transform: scale(1.12); } }
+/* Player YouTube đặt ngoài màn hình, chỉ dùng để phát tiếng */
+.music-player-holder { position: fixed; left: -9999px; top: 0; width: 200px; height: 200px; overflow: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .music-toggle svg { animation: none !important; } .music-toggle { transition: none; } }
