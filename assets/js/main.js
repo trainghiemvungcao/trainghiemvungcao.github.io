@@ -117,6 +117,7 @@
 
   // ----- Form liên hệ -----
   var form = document.getElementById("contact-form");
+  var WEB3FORMS_KEY = "0c18381d-090c-47b8-9b2a-0e1295a833ae"; // khoá công khai, chỉ cho phép gửi thư về email đã đăng ký
   if (form) {
     var success = document.getElementById("form-success");
 
@@ -162,11 +163,46 @@
       });
       if (!ok) { if (firstBad) firstBad.focus(); return; }
 
-      // Trang này là bản tĩnh nên chưa gửi đi đâu. Khi có backend,
-      // hãy gửi dữ liệu bằng fetch() tại đây.
-      form.reset();
-      success.classList.add("show");
-      success.focus();
+      // Gửi lời nhắn qua Web3Forms: dịch vụ này chuyển nội dung về email đã đăng ký.
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var errorBox = document.getElementById("form-error");
+      var data = {
+        access_key: WEB3FORMS_KEY,
+        subject: "Lời nhắn mới từ website Trải Nghiệm Vùng Cao",
+        from_name: "Website Trải Nghiệm Vùng Cao",
+        name: form.elements.name.value.trim(),
+        email: form.elements.email.value.trim(),
+        phone: form.elements.phone.value.trim(),
+        topic: form.elements.topic.value,
+        message: form.elements.message.value.trim(),
+        botcheck: form.elements.botcheck.checked // ô ẩn để chặn bot spam
+      };
+      var originalLabel = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Đang gửi...";
+      errorBox.hidden = true;
+      success.classList.remove("show");
+
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(data)
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+          if (!json.success) throw new Error(json.message || "Gửi không thành công");
+          form.reset();
+          success.classList.add("show");
+          success.focus();
+        })
+        .catch(function () {
+          errorBox.hidden = false;
+          errorBox.focus();
+        })
+        .then(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        });
     });
   }
 })();

@@ -500,3 +500,10 @@ html { scroll-padding-top: 88px; }
 .team-grid .card p { font-size: .88rem; line-height: 1.5; }
 @media (max-width: 1000px) { .team-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 560px) { .team-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+
+/* Thông báo lỗi khi gửi lời nhắn không thành công */
+.form-error {
+  background: #fdecea; border: 1px solid #f1b8b2; color: #8f2a20;
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; font-weight: 600;
+}
+.btn:disabled { opacity: .7; cursor: wait; transform: none; }
