@@ -117,7 +117,8 @@
 
   // ----- Form liên hệ -----
   var form = document.getElementById("contact-form");
-  var WEB3FORMS_KEY = "0c18381d-090c-47b8-9b2a-0e1295a833ae"; // khoá công khai, chỉ cho phép gửi thư về email đã đăng ký
+  // Dán link "Web app" của Google Apps Script vào đây (xem google-apps-script/HUONG-DAN.md).
+  var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWq8Dvpb_6mOItxTySoPfSnNgnF6Ou_MreuE3gz-LoXaVMq_7S8kMTE6m--XrvUs48/exec";
   if (form) {
     var success = document.getElementById("form-success");
 
@@ -163,32 +164,32 @@
       });
       if (!ok) { if (firstBad) firstBad.focus(); return; }
 
-      // Gửi lời nhắn qua Web3Forms: dịch vụ này chuyển nội dung về email đã đăng ký.
+      // Gửi lời nhắn tới Google Apps Script, script sẽ ghi thêm một dòng vào Google Sheet.
       var submitBtn = form.querySelector('button[type="submit"]');
       var errorBox = document.getElementById("form-error");
       var data = {
-        access_key: WEB3FORMS_KEY,
-        subject: "Lời nhắn mới từ website Trải Nghiệm Vùng Cao",
-        from_name: "Website Trải Nghiệm Vùng Cao",
         name: form.elements.name.value.trim(),
         email: form.elements.email.value.trim(),
         phone: form.elements.phone.value.trim(),
         topic: form.elements.topic.value,
-        message: form.elements.message.value.trim(),
-        botcheck: form.elements.botcheck.checked // ô ẩn để chặn bot spam
+        message: form.elements.message.value.trim()
       };
+      var isBot = form.elements.botcheck.checked; // ô ẩn để chặn bot spam
       var originalLabel = submitBtn.textContent;
       submitBtn.disabled = true;
       submitBtn.textContent = "Đang gửi...";
       errorBox.hidden = true;
       success.classList.remove("show");
 
-      fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(data)
-      })
-        .then(function (res) { return res.json(); })
+      var request = isBot
+        ? Promise.resolve({ success: true }) // bot: giả vờ thành công, không ghi vào Sheet
+        : !GOOGLE_SCRIPT_URL
+          ? Promise.reject(new Error("Chưa cấu hình GOOGLE_SCRIPT_URL"))
+          // Không đặt Content-Type để trình duyệt gửi dạng text/plain, tránh bước preflight mà Apps Script không hỗ trợ.
+          : fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify(data) })
+              .then(function (res) { return res.json(); });
+
+      request
         .then(function (json) {
           if (!json.success) throw new Error(json.message || "Gửi không thành công");
           form.reset();
