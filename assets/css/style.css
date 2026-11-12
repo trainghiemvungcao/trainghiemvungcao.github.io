@@ -355,6 +355,9 @@ p { margin: 0 0 1em; }
 .bank dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; }
 .bank dt { color: #a9c7b8; }
 .bank dd { margin: 0; font-weight: 700; }
+.bank-qr { margin: 20px 0 0; text-align: center; }
+.bank-qr img { display: block; width: 100%; max-width: 240px; height: auto; margin-inline: auto; border-radius: 14px; background: #fff; }
+.bank-qr figcaption { margin-top: 10px; font-size: .9rem; color: #a9c7b8; }
 
 /* ---------- FAQ ---------- */
 .faq { max-width: 780px; margin-inline: auto; display: grid; gap: 12px; }
